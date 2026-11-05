@@ -56,6 +56,15 @@ app.delete('/api/tasks/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Connect to MongoDB Atlas first, then start the server
+const PORT = process.env.PORT || 5000;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB Atlas');
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error('MongoDB connection error:', err.message));
 // EDIT: change a task's text
 app.put('/api/tasks/:id', async (req, res) => {
   try {
@@ -74,12 +83,3 @@ app.put('/api/tasks/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Connect to MongoDB Atlas first, then start the server
-const PORT = process.env.PORT || 5000;
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('Connected to MongoDB Atlas');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error('MongoDB connection error:', err.message));
