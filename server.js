@@ -56,7 +56,24 @@ app.delete('/api/tasks/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// EDIT: change a task's text
+app.put('/api/tasks/:id', async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'Task text is required' });
+    }
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
+      { text: text.trim() },
+      { new: true, runValidators: true } // return the updated task
+    );
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 // Connect to MongoDB Atlas first, then start the server
 const PORT = process.env.PORT || 5000;
 mongoose
